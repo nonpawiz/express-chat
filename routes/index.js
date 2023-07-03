@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
   figlet("Hello World", (err, data) => {
     res.send([
       {
-        project: "EXPRESS_BACKEND_API",
+        project: "EXPRESS_API",
         version: "1.0.0",
         author: "nonpawiz",
         year: 2023,

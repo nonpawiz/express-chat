@@ -1,14 +1,54 @@
 var createError = require("http-errors");
 var express = require("express");
+var app = express();
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const cors = require("cors");
+const figlet = require("figlet");
+const http = require("http");
+const { Server } = require("socket.io");
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+// io.on("connection", (socket) => {
+//   console.log(`User Connected: ${socket.id}`);
+
+//   socket.on('send_message', (msg) => {
+//     console.log(msg);
+//     io.emit('chat receive_message', msg);
+//   });
+// });
+
+io.on("connection", (socket) => {
+  console.log(`User Connected: ${socket.id}`);
+
+  socket.on("join_room", (data) => {
+    console.log("join_room  : " + data);
+    socket.join(data);
+  });
+
+  socket.on("join_user", (data) => {
+    console.log("join_user  : " + data);
+    socket.join(data);
+  });
+
+  socket.on("send_message", (data) => {
+    console.log("send_message : " + data);
+    socket.to(data.room).emit("receive_message", data);
+  });
+});
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
 
-var app = express();
+app.use(cors());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -40,4 +80,12 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+const port = process.env.PORT || 8000;
+server.listen(port, () => {
+  figlet("nonpawiz", (err, data) => {
+    console.log(data);
+    console.log(
+      `Server is Successfully Running, and App is listening on http://localhost:${port}/`
+    );
+  });
+});
