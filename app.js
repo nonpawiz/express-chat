@@ -1,3 +1,4 @@
+require('dotenv').config();
 var createError = require("http-errors");
 var express = require("express");
 var app = express();
@@ -9,21 +10,13 @@ const figlet = require("figlet");
 const http = require("http");
 const { Server } = require("socket.io");
 const server = http.createServer(app);
+const bodyParser = require('body-parser')
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
-
-// io.on("connection", (socket) => {
-//   console.log(`User Connected: ${socket.id}`);
-
-//   socket.on('send_message', (msg) => {
-//     console.log(msg);
-//     io.emit('chat receive_message', msg);
-//   });
-// });
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -49,7 +42,8 @@ var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
 
 app.use(cors());
-
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
@@ -82,8 +76,8 @@ app.use(function (err, req, res, next) {
 
 const port = process.env.PORT || 8000;
 server.listen(port, () => {
-  figlet("nonpawiz", (err, data) => {
-    console.log(data);
+  figlet("nonpawiz", (err, nonpawiz) => {
+    console.log(nonpawiz);
     console.log(
       `Server is Successfully Running, and App is listening on http://localhost:${port}/`
     );

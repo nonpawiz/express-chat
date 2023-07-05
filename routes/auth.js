@@ -2,17 +2,13 @@ var express = require("express");
 var router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const secretKey = "12345";
-/* GET auth listing. */
-// router.get("/login", function (req, res, next) {
-//   res.json("auth");
-// });
+const secretKey = process.env.JWT_SECRET;
 
 router.post("/login", (req, res) => {
-//   res.json("sdasdsa");
+  // const username = req.body.username;
+  // const password = req.body.password;
   const { username, password } = req.body;
   if (username === "admin" && password === "12345") {
-    // Generate a JWT token
     const token = jwt.sign({ username }, secretKey, { expiresIn: "1h" });
     res.json({ token });
   } else {
